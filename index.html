@@ -5,12 +5,15 @@
         canvas { width: 100%; height: 100%; }
         #score {position: absolute; width: 100%; text-align: left; color: white; }
         #lost {position: absolute; width: 100%; text-align: right; color: white; }
+        #pauseMenu {position: absolute; width: 100%; height: 100%; background: black; z-index: 3; opacity: .5; visibility: hidden }
 
     </style>
 </head>
 <body>
     <div id="score"> 0 </div>
     <div id="lost"> 0 </div>
+    <div id="pauseMenu">  </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/95/three.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/17.2.0/Tween.js"></script>
@@ -27,32 +30,20 @@
     <script id="fragmentShader" type="x-shader/x-fragment">
 
         uniform vec2 u_resolution;
-
         uniform float u_time;
-        
         uniform vec2 u_mouse; 
-
         varying vec2 vUv;
-
         void main( void ) {
-
             vec2 position = vUv;
-
             vec2 st = gl_FragCoord.xy/u_mouse.xy;
-            gl_FragColor=vec4(sin(u_time),cos(u_time),st.x,1.0);
-
+            gl_FragColor=vec4(sin(position.x),cos(u_time),st.x,1.0);
         }
 
     </script>
 
     <script>
-        var player; 
-        var terrain; 
-        var renderer;
-        var scene; 
-        var camera; 
-        var controls; 
-        var uniforms; 
+        var player, terrain; 
+        var renderer, scene, camera, controls, uniforms;
         var playerSpeed = 200; //lower is faster
         var pointSpeed = .1; 
         var pointInterval = 700; 
@@ -62,8 +53,7 @@
         var moving = false; 
         var directions = {"L": [-1, 0], "U": [0, 1], "R": [1, 0], "D": [0, -1]}
         var paused = false; 
-        var mouseX; 
-        var mouseY; 
+        var mouseX, mouseY;
         var halfWidth = window.innerWidth / 2;
         var halfHeight = window.innerHeight / 2;
         var minClamp = new THREE.Vector3(-.7, -.7, 3); 
@@ -254,10 +244,17 @@
         function pause(){
             paused = true;
             console.log("paused");
+            document.getElementById("pauseMenu").style.visibility = "visible";
         }
 
         function resume(){
             paused = false; 
+        }
+
+        function switchStyle(){
+            terrain.material = new THREE.MeshLambertMaterial( {color: 0xaaff00, side: THREE.DoubleSide} );
+            player.material = new THREE.MeshBasicMaterial( {color: 0xaaff00} );
+
         }
 
         document.onkeydown = function(e){
@@ -277,6 +274,9 @@
                 case 40 :
                 case 83:
                     shift("D")
+                    break; 
+                case 32: 
+                    switchStyle(); 
                     break; 
             }
 
