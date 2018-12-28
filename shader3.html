@@ -1,6 +1,22 @@
 
 <body>
+    <div id="background">Use LMB to draw flowers, RMB to rotate the planet</div>
     <div id="container"></div>
+    <style>
+        body{
+            overflow: hidden; 
+        }
+        #background{
+            position: absolute; 
+            width: 100vw; 
+            height: 100vh; 
+            background: linear-gradient(#63f883, rgb(91, 168, 199));
+        }        
+        #container{
+            position: absolute; 
+            z-index: 2; 
+        }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/95/three.js"></script>
     <script src="./TrackBallControls.js"></script>
     
@@ -167,16 +183,11 @@
         var ballmaterial; 
         var mouseisdown; 
         var controls; 
-        var colors = [new THREE.Vector3(1, 0, 1), 
-                      new THREE.Vector3(0, 1, 1), 
-                      new THREE.Vector3(0, 0, 1), 
-                      new THREE.Vector3(1, 0, 0), 
-                      new THREE.Vector3(0, 0, 1), 
-                      new THREE.Vector3(1, 1, 1),
-                      new THREE.Vector3(1, 1, 0),
-                      new THREE.Vector3(0, 1, 0) 
+        var colors = [new THREE.Vector3(1, .5, 1), 
+                      new THREE.Vector3(1, .8, .5), 
+                      new THREE.Vector3(.5, .5, .9), 
         ];
-
+        var white = new THREE.Vector3(1, 1, 1);
         init();
         animate();
         var raycaster = new THREE.Raycaster();
@@ -223,9 +234,8 @@
                 u_resolution: { type: "v2", value: new THREE.Vector2() },
                 u_mouse: { type: "v2", value: new THREE.Vector2() }, 
                 amplitude: {type: "f", value: 0}, 
-                color1: { type: "v3", value: new THREE.Vector3(1, 1, 1) }, 
-                color2: { type: "v3", value: new THREE.Vector3() }
-
+                color1: { type: "v3", value: new THREE.Vector3(.9, .9, .5) }, 
+                color2: { type: "v3", value: new THREE.Vector3(.9, .5, .6) },  
             };
             var material = new THREE.ShaderMaterial( {
                 uniforms: uniforms,
@@ -261,8 +271,9 @@
             scene.add( mesh );
 
 
-            renderer = new THREE.WebGLRenderer();
+            renderer = new THREE.WebGLRenderer({alpha:true});
             renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setClearColor( 0xffaa00, .0 );
 
             container.appendChild( renderer.domElement );
 
@@ -280,7 +291,7 @@
                 ball.material.uniforms.u_base.value = ball.position; 
                 ball.material.uniforms.num_petals.value = Math.floor(Math.random() * 10);
                 ball.material.uniforms.color1.value = random(colors); 
-                ball.material.uniforms.color2.value = random(colors); 
+                ball.material.uniforms.color2.value = white; 
                 ball.material.uniforms.height.value = Math.random() * 7 + 1; 
                 ball.material.uniforms.size.value = Math.random() * 1.5 + 0.3; 
                 ball.lookAt(0, 0, 0); 
